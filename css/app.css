@@ -1,0 +1,1030 @@
+/* ============================================================================
+   Stars & Premium — Mini App
+   REAL fintech dark UI (Cash App / Telegram Wallet / Revolut estetikasi):
+   - Chuqur neytral yuzalar (qora-siyoh, binafsha tus YO'Q)
+   - Bitta aniq accent (jonli ko'k-cyan)
+   - Katta aniq raqamlar, ko'p informatsiya
+   - Ko'rinmas chegaralar, realistik chuqurlik (soft shadows)
+   - Telegram Twemoji custom-emoji icon sifatida (self-hosted SVG)
+   ========================================================================== */
+
+:root {
+  color-scheme: dark;
+
+  /* Yuzalar: chuqur NEYTRAL qora-siyoh — "app panel" hissi */
+  --bg: #07070b;
+  --bg-2: #0d0d14;
+  --panel: #12121c;
+  --panel-2: #171724;
+  --panel-3: #1c1c2b;
+
+  /* Matn */
+  --text: #f2f3f8;
+  --text-2: #b9bccb;
+  --hint: #6f7284;
+
+  /* Yagona accent: jonli ko'k-cyan (fintech standard) */
+  --accent: #3ea6ff;
+  --accent-deep: #2b7fd4;
+  --accent-dim: rgba(62, 166, 255, .12);
+  --accent-line: rgba(62, 166, 255, .25);
+
+  /* Funksional ranglar (to'yingan, "dumbul" emas) */
+  --ok: #35d07f;
+  --ok-dim: rgba(53, 208, 127, .12);
+  --warn: #f7b955;
+  --warn-dim: rgba(247, 185, 85, .12);
+  --danger: #ff6b6b;
+  --danger-dim: rgba(255, 107, 107, .12);
+  --gold: #f5c044;
+  --gold-dim: rgba(245, 192, 68, .12);
+  --purple: #a88bfa;
+  --purple-dim: rgba(168, 139, 250, .12);
+  --pink: #f78fb3;
+  --pink-dim: rgba(247, 143, 179, .12);
+
+  /* Chegaralar: juda nozik, deyarli ko'rinmas — real app'day */
+  --line: rgba(255, 255, 255, .055);
+  --line-2: rgba(255, 255, 255, .10);
+
+  /* Radius: yagona shkala */
+  --r1: 10px; --r2: 14px; --r3: 18px; --r4: 22px; --r5: 26px;
+
+  /* Chuqurlik: realistik soft soyalarda ko'rinmas border bilan */
+  --sh1: 0 1px 2px rgba(0, 0, 0, .25), 0 2px 8px rgba(0, 0, 0, .20);
+  --sh2: 0 4px 12px rgba(0, 0, 0, .30), 0 12px 32px rgba(0, 0, 0, .30);
+  --sh3: 0 8px 20px rgba(0, 0, 0, .40), 0 24px 56px rgba(0, 0, 0, .45);
+  --glow: 0 6px 24px rgba(62, 166, 255, .25);
+
+  --ease: cubic-bezier(.32, .72, 0, 1);
+  --press: transform .13s var(--ease), box-shadow .13s var(--ease),
+            filter .13s var(--ease), background .13s var(--ease);
+
+  --tabbar-h: 76px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+html { height: 100%; }
+body {
+  min-height: 100%;
+  background:
+    radial-gradient(90vw 60vh at 85% -10%, rgba(62, 166, 255, .05), transparent 60%),
+    var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', system-ui, Roboto, sans-serif;
+  font-size: 15px; line-height: 1.45; letter-spacing: -.01em;
+  -webkit-font-smoothing: antialiased;
+  overscroll-behavior-y: none; user-select: none;
+}
+input, textarea { user-select: text; }
+button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+a { color: var(--accent); text-decoration: none; }
+svg { display: block; }
+
+.hidden { display: none !important; }
+
+/* ===================== TWEMOJI ICON (katta, rangli) ===================== */
+.emoji {
+  display: inline-block; vertical-align: middle;
+  width: 1em; height: 1em;
+  -webkit-user-drag: none;
+}
+.emoji-drop { filter: drop-shadow(0 2px 6px rgba(0, 0, 0, .35)); }
+
+/* ===================== PREMIUM ANIMATSIYALI EMOJI (Lottie) =====================
+   .emo — emoji.js yaratadigan konteyner. O'lcham inline style'da beriladi.
+   Ichida lottie SVG (yoki fallback img) 100% to'ldiradi. */
+.emo {
+  display: inline-block; vertical-align: middle;
+  position: relative; line-height: 0;
+  -webkit-user-drag: none; user-select: none;
+}
+.emo svg { width: 100%; height: 100%; display: block; }
+.emo img { width: 100%; height: 100%; object-fit: contain; display: block; }
+
+/* ===================== 0) Boot ===================== */
+.boot {
+  position: fixed; inset: 0; z-index: 90;
+  display: grid; place-items: center;
+  background: var(--bg);
+  transition: opacity .3s, visibility .3s;
+}
+.boot.done { opacity: 0; visibility: hidden; }
+.boot-body { display: grid; justify-items: center; gap: 14px; }
+.boot-mark {
+  width: 68px; height: 68px; border-radius: 20px;
+  display: grid; place-items: center;
+  background: var(--panel-2);
+  border: 1px solid var(--line-2);
+  box-shadow: var(--sh2);
+}
+.boot-mark img { width: 40px; height: 40px; }
+.boot-name { font-size: 17px; font-weight: 800; letter-spacing: -.02em; }
+.boot-sub { color: var(--hint); font-size: 13px; }
+.boot-bar { width: 108px; height: 3px; border-radius: 3px; background: var(--panel-3); overflow: hidden; }
+.boot-bar span {
+  display: block; width: 40%; height: 100%;
+  border-radius: 3px; background: var(--accent);
+  animation: bootslide 1s var(--ease) infinite;
+}
+@keyframes bootslide { from { transform: translateX(-110%);} to { transform: translateX(340%);} }
+
+/* ===================== 1) Gate ===================== */
+.gate { position: fixed; inset: 0; z-index: 80; background: var(--bg); overflow-y: auto; }
+.gate-inner {
+  min-height: 100%;
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 48px 20px calc(env(safe-area-inset-bottom, 0px) + 32px);
+  max-width: 420px; margin: 0 auto;
+}
+.gate-head { text-align: center; margin-bottom: 28px; }
+.gate-mark {
+  width: 76px; height: 76px; border-radius: 23px; margin: 0 auto 16px;
+  display: grid; place-items: center;
+  background: var(--panel-2); border: 1px solid var(--line-2);
+  box-shadow: var(--sh2);
+}
+.gate-mark img { width: 44px; height: 44px; }
+.gate-title { font-size: 24px; font-weight: 800; letter-spacing: -.03em; }
+.gate-sub { color: var(--hint); margin-top: 6px; font-size: 14px; }
+.gate-options { display: grid; gap: 10px; }
+.pick {
+  display: flex; align-items: center; gap: 14px; width: 100%;
+  padding: 15px 14px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--r3);
+  text-align: left;
+  box-shadow: var(--sh1);
+  transition: var(--press);
+}
+.pick:active { transform: scale(.97); filter: brightness(1.12); border-color: var(--line-2); }
+.pick-ic { flex: 0 0 46px; height: 46px; border-radius: 14px; display: grid; place-items: center; background: var(--panel-3); }
+.pick-ic img { width: 28px; height: 28px; }
+.pick-text { flex: 1; display: grid; gap: 2px; min-width: 0; }
+.pick-title { font-weight: 700; font-size: 15px; }
+.pick-desc { color: var(--hint); font-size: 12.5px; }
+.pick-go { color: var(--hint); }
+.pick-go svg { width: 18px; height: 18px; }
+.gate-foot { text-align: center; color: var(--hint); font-size: 12px; margin-top: 26px; }
+
+/* ===================== 2) Shell / topbar / tabbar ===================== */
+.shell { min-height: 100dvh; display: flex; flex-direction: column; }
+
+.topbar {
+  position: sticky; top: 0; z-index: 30;
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: calc(env(safe-area-inset-top, 0px) + 12px) 16px 12px;
+  background: rgba(7, 7, 11, .86);
+  -webkit-backdrop-filter: saturate(1.5) blur(18px);
+  backdrop-filter: saturate(1.5) blur(18px);
+  border-bottom: 1px solid var(--line);
+}
+.topbar-main { min-width: 0; display: grid; }
+.topbar-title {
+  font-size: 20px; font-weight: 800; letter-spacing: -.03em;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.topbar-sub { color: var(--hint); font-size: 12px; margin-top: 1px; display: none; }
+.topbar-sub.show { display: block; }
+.topbar-side { display: flex; align-items: center; gap: 8px; }
+
+.chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--panel-2); color: var(--text);
+  font-size: 12.5px; font-weight: 700;
+  padding: 7px 11px; border-radius: 999px; white-space: nowrap;
+  border: 1px solid var(--line);
+}
+.chip img.emoji { font-size: 12px; }
+.chip .num { color: var(--accent); }
+.chip-btn { transition: var(--press); }
+.chip-btn:active { transform: scale(.95); }
+
+.avatar {
+  width: 40px; height: 40px; border-radius: 50%; object-fit: cover;
+  border: 2px solid var(--line-2);
+  box-shadow: var(--sh1);
+}
+.avatar-fb {
+  display: grid; place-items: center;
+  background: var(--panel-3);
+  color: var(--text); font-weight: 800; font-size: 16px;
+}
+
+.iconbtn {
+  width: 36px; height: 36px; border-radius: 12px;
+  display: grid; place-items: center;
+  background: var(--panel-2); border: 1px solid var(--line); color: var(--text-2);
+  transition: var(--press);
+}
+.iconbtn:active { transform: scale(.92); filter: brightness(1.15); }
+.iconbtn svg { width: 18px; height: 18px; }
+
+.content {
+  flex: 1; width: 100%;
+  max-width: 620px; margin: 0 auto;
+  padding: 16px 16px calc(var(--tabbar-h) + 24px);
+}
+
+/* ===================== 2a) SLIDING DOCK NAVBAR (yangi usul) =====================
+   Bitta sirpanuvchi indikator (dock-ind) — aktiv tab ustiga silliq
+   sirpanadi (spring o'xshash easing). Iconlar faqat Lucide. */
+.tabbar {
+  position: fixed; left: 50%; transform: translateX(-50%);
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 12px);
+  z-index: 30;
+  display: flex; align-items: center;
+  padding: 6px;
+  background: rgba(18, 18, 28, .95);
+  -webkit-backdrop-filter: saturate(1.5) blur(22px);
+  backdrop-filter: saturate(1.5) blur(22px);
+  border: 1px solid var(--line-2);
+  border-radius: 999px;
+  box-shadow: var(--sh2);
+}
+.tab {
+  position: relative; z-index: 2;
+  width: 56px; height: 46px;
+  display: flex; align-items: center; justify-content: center;
+  gap: 0; overflow: hidden; padding: 0;
+  color: var(--hint);
+  border-radius: 999px;
+  transition: width .34s cubic-bezier(.34, 1.3, .5, 1), color .2s var(--ease), transform .15s var(--ease);
+}
+.tab:active { transform: scale(.9); }
+.tab.on { color: #fff; width: 108px; }
+.tab-emo { flex: 0 0 24px; display: grid; place-items: center; }
+.tab-lbl {
+  font-size: 12.5px; font-weight: 800; letter-spacing: -.01em;
+  white-space: nowrap; max-width: 0; opacity: 0;
+  transition: max-width .3s var(--ease), opacity .2s var(--ease), margin .3s var(--ease);
+  margin-left: 0;
+}
+.tab.on .tab-lbl { max-width: 70px; opacity: 1; margin-left: 7px; }
+/* Aktiv emoji — bir marta sakrab chiqadi (jonli mikrovzom) */
+.tab.on .tab-emo { animation: tabpop .45s cubic-bezier(.34, 1.56, .64, 1); }
+@keyframes tabpop {
+  0%   { transform: translateY(0) scale(1); }
+  45%  { transform: translateY(-7px) scale(1.22); }
+  100% { transform: translateY(0) scale(1); }
+}
+/* Sirpanuvchi indikator — aktiv tab'ning haqiqiy kengligiga moslashadi */
+.dock-ind {
+  position: absolute; z-index: 1;
+  top: 6px; left: 6px;
+  width: 56px; height: 46px;
+  border-radius: 999px;
+  background: var(--accent);
+  box-shadow: var(--glow);
+  opacity: 0;
+  transition: transform .34s cubic-bezier(.34, 1.3, .5, 1), width .34s cubic-bezier(.34, 1.3, .5, 1), opacity .2s;
+}
+
+/* ===================== 3) View o'tish ===================== */
+.view-enter { animation: vin .24s var(--ease) both; }
+@keyframes vin { from { opacity: 0; transform: translateY(12px);} }
+
+/* ===================== 4) Bo'lim sarlavhalari ===================== */
+.sec { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin: 22px 2px 10px; }
+.sec:first-child { margin-top: 2px; }
+.sec-t {
+  font-size: 11px; font-weight: 700;
+  letter-spacing: .10em; text-transform: uppercase;
+  color: var(--hint);
+}
+.sec-a {
+  font-size: 12.5px; font-weight: 600; color: var(--accent);
+  display: inline-flex; align-items: center; gap: 3px;
+}
+.sec-a svg { width: 13px; height: 13px; }
+
+/* ===================== 5) Kartochka — panel ===================== */
+.card {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--r3);
+  box-shadow: var(--sh1);
+}
+.card-pad { padding: 16px; }
+.card + .card { margin-top: 10px; }
+
+.group { padding: 2px 14px; }
+.grow {
+  display: flex; align-items: center; gap: 12px;
+  width: 100%; min-height: 50px; padding: 9px 0;
+  text-align: left;
+  transition: filter .13s;
+}
+.grow + .grow { border-top: 1px solid var(--line); }
+.grow:active { filter: brightness(1.15); }
+.grow.ic { display: grid; place-items: center; flex: 0 0 36px; width: 36px; height: 36px; padding: 0; min-height: 0; border-radius: 11px; background: var(--panel-3); }
+.grow.ic img.emoji { font-size: 20px; }
+.bd { flex: 1; min-width: 0; display: grid; gap: 1px; }
+.grow-t { font-size: 14px; font-weight: 600; }
+.grow-d { font-size: 12px; color: var(--hint); }
+.grow-end { margin-left: auto; display: flex; align-items: center; gap: 8px; color: var(--hint); flex: 0 0 auto; }
+.grow-end svg { width: 16px; height: 16px; }
+.grow-val { font-size: 13px; font-weight: 600; color: var(--text-2); white-space: nowrap; }
+
+/* ===================== 6) Hero — balans paneli ===================== */
+.hero {
+  position: relative; overflow: hidden;
+  border-radius: var(--r4);
+  padding: 22px 18px 18px;
+  background:
+    radial-gradient(140% 160% at 100% 0%, rgba(62, 166, 255, .10) 0%, transparent 50%),
+    var(--panel);
+  border: 1px solid var(--line-2);
+  box-shadow: var(--sh2);
+}
+.hero-l { font-size: 11px; font-weight: 700; letter-spacing: .10em; text-transform: uppercase; color: var(--hint); display: flex; align-items: center; gap: 6px; }
+.hero-l svg { width: 12px; height: 12px; }
+.hero-v { font-size: 38px; font-weight: 800; letter-spacing: -.04em; margin-top: 8px; font-variant-numeric: tabular-nums; color: #fff; }
+.hero-v small { font-size: 16px; font-weight: 600; color: var(--hint); letter-spacing: 0; margin-left: 5px; }
+.hero-m { display: flex; gap: 8px; margin-top: 6px; flex-wrap: wrap; }
+/* Balance hero — o'ng tepada suzuvchi animatsiyali 💲 */
+.hero-balance { padding-right: 78px; }
+.hero-emo {
+  position: absolute; right: 14px; top: 14px; z-index: 2;
+  width: 56px; height: 56px;
+  display: grid; place-items: center;
+}
+.hero-emo::before {
+  content: ''; position: absolute; inset: -10px; z-index: -1;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(62,166,255,.22), transparent 68%);
+  filter: blur(6px);
+}
+.hero-emo .emo, .hero-emo .emo svg, .hero-emo .emo img { width: 48px; height: 48px; }
+.hero-emo svg.ic { width: 44px; height: 44px; color: var(--accent); }
+
+/* Hero ichidagi asosiy amal tugmasi */
+.hero-act {
+  position: absolute; right: 14px; bottom: 14px;
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--accent); color: #fff;
+  font-size: 13px; font-weight: 700;
+  padding: 9px 15px; border-radius: 999px;
+  box-shadow: var(--glow);
+  transition: var(--press);
+}
+.hero-act:active { transform: scale(.94); filter: brightness(1.12); }
+
+/* ===================== 6a) Keng quick-action tugmalar ===================== */
+.qa-grid { display: grid; gap: 10px; margin: 10px 0 0; }
+.qa {
+  display: flex; align-items: center; gap: 12px;
+  width: 100%;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--r3);
+  padding: 14px 14px;
+  box-shadow: var(--sh1);
+  text-align: left;
+  transition: var(--press);
+}
+.qa:active { transform: scale(.97); filter: brightness(1.15); border-color: var(--line-2); }
+.qa-ic {
+  flex: 0 0 44px; height: 44px; border-radius: var(--r3);
+  display: grid; place-items: center;
+  background: var(--accent-dim); color: var(--accent);
+}
+.qa-ic.ok { background: var(--ok-dim); color: var(--ok); }
+.qa-bd { flex: 1; min-width: 0; display: grid; gap: 1px; }
+.qa-t { font-size: 14.5px; font-weight: 800; letter-spacing: -.01em; }
+.qa-s { font-size: 11.5px; color: var(--hint); }
+.qa > svg { color: var(--hint); }
+
+/* ===================== 6b) Squircle icon (ro'yxatlar uchun) ===================== */
+.sq {
+  flex: 0 0 36px; height: 36px;
+  display: grid; place-items: center;
+  border-radius: 12px;
+  background: var(--panel-3);
+  color: var(--text-2);
+}
+.sq svg { width: 18px; height: 18px; }
+.sq-gold { background: var(--gold-dim); color: var(--gold); }
+.sq-purple { background: var(--purple-dim); color: var(--purple); }
+.sq-ok { background: var(--ok-dim); color: var(--ok); }
+.sq-sky { background: var(--accent-dim); color: var(--accent); }
+.sq-warn { background: var(--warn-dim); color: var(--warn); }
+.sq-danger { background: var(--danger-dim); color: var(--danger); }
+.sq-dim { background: var(--panel-3); color: var(--hint); }
+
+/* ===================== 7) Tiles ===================== */
+.tiles { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+.tiles.t3 { grid-template-columns: repeat(3, 1fr); }
+.tile {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--r2);
+  padding: 13px 14px;
+  box-shadow: var(--sh1);
+  display: grid; gap: 4px; align-content: start;
+}
+.tile-l { display: flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--hint); }
+.tile-l img.emoji { font-size: 13px; }
+.tile-v { font-size: 21px; font-weight: 800; letter-spacing: -.03em; font-variant-numeric: tabular-nums; }
+.tile-s { font-size: 11px; color: var(--hint); }
+.tile.ok .tile-v { color: var(--ok); }
+.tile.warn .tile-v { color: var(--warn); }
+.tile.danger .tile-v { color: var(--danger); }
+.tile.gold .tile-v { color: var(--gold); }
+.tile.purple .tile-v { color: var(--purple); }
+
+/* ===================== 8) GRID KARTALAR — katta PREMIUM animatsiyali emoji ===================== */
+.svc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.svc {
+  position: relative; overflow: hidden;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 5px; min-height: 158px; padding: 22px 12px 16px;
+  background:
+    radial-gradient(120% 90% at 50% 0%, rgba(255,255,255,.04), transparent 60%),
+    var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--r4);
+  box-shadow: var(--sh1);
+  transition: var(--press);
+  width: 100%; text-align: center;
+}
+.svc:active {
+  transform: scale(.95);
+  filter: brightness(1.18);
+  border-color: var(--line-2);
+  box-shadow: var(--sh2);
+}
+.svc.off { opacity: .4; }
+/* Stars kartasi — iliq oltin nur */
+.svc-stars {
+  border-color: rgba(245,192,68,.22);
+  background:
+    radial-gradient(130% 100% at 50% -10%, rgba(245,192,68,.16), transparent 55%),
+    var(--panel);
+}
+.svc-stars:active { border-color: rgba(245,192,68,.4); }
+/* Premium kartasi — binafsha nur */
+.svc-premium {
+  border-color: rgba(168,139,250,.24);
+  background:
+    radial-gradient(130% 100% at 50% -10%, rgba(168,139,250,.18), transparent 55%),
+    var(--panel);
+}
+.svc-premium:active { border-color: rgba(168,139,250,.42); }
+
+/* Katta animatsiyali premium emoji (Lottie) — nurli platforma ustida */
+.svc-emo {
+  position: relative; z-index: 2;
+  width: 64px; height: 64px; margin-bottom: 8px;
+  display: grid; place-items: center;
+}
+.svc-emo::before {
+  content: ''; position: absolute; inset: -14px; z-index: -1;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,255,255,.10), transparent 68%);
+  filter: blur(6px);
+}
+.svc-stars .svc-emo::before { background: radial-gradient(circle, rgba(245,192,68,.28), transparent 68%); }
+.svc-premium .svc-emo::before { background: radial-gradient(circle, rgba(168,139,250,.30), transparent 68%); }
+.svc-emo .emo { width: 56px; height: 56px; display: block; }
+.svc-emo .emo svg { width: 56px; height: 56px; display: block; }
+.svc-emo .emo img { width: 56px; height: 56px; object-fit: contain; }
+/* Lucide fallback (emoji yo'q) — rangli, yirik */
+.svc-emo svg.ic { width: 52px; height: 52px; }
+.svc-stars .svc-emo svg.ic { color: var(--gold); }
+.svc-premium .svc-emo svg.ic { color: var(--purple); }
+
+.svc-t { font-size: 15px; font-weight: 800; letter-spacing: -.01em; color: #fff; }
+.svc-s { font-size: 11px; color: var(--hint); margin-top: -3px; }
+.svc-big {
+  font-size: 28px; font-weight: 900; letter-spacing: -.02em;
+  color: #fff; font-variant-numeric: tabular-nums; line-height: 1;
+  margin-top: 2px;
+}
+.svc-pill {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 10.5px; font-weight: 700;
+  color: var(--ok);
+  background: var(--ok-dim);
+  padding: 4px 10px; border-radius: 999px;
+  margin-top: 8px;
+}
+.svc-pill::before {
+  content: ''; width: 6px; height: 6px; border-radius: 50%;
+  background: var(--ok);
+  box-shadow: 0 0 8px var(--ok);
+  animation: pulse 1.8s ease infinite;
+}
+@keyframes pulse { 50% { opacity: .4; } }
+.svc-badge {
+  position: absolute; top: 10px; left: 10px; z-index: 3;
+  font-size: 9.5px; font-weight: 800; letter-spacing: .04em;
+  padding: 4px 9px; border-radius: 999px;
+  background: var(--gold); color: #221a00;
+  box-shadow: 0 4px 14px rgba(245,192,68,.35);
+}
+.svc-badge.prem {
+  background: var(--purple); color: #1a1030;
+  box-shadow: 0 4px 14px rgba(168,139,250,.4);
+}
+
+/* ===================== 8b) SHOP HERO — xarid ekranlari sarlavhasi ===================== */
+.shop-hero {
+  position: relative; overflow: hidden;
+  display: grid; justify-items: center; text-align: center;
+  gap: 2px; padding: 22px 16px 18px; margin-bottom: 12px;
+  border-radius: var(--r4);
+  border: 1px solid var(--line);
+  box-shadow: var(--sh1);
+}
+.shop-hero-stars {
+  border-color: rgba(245,192,68,.22);
+  background:
+    radial-gradient(120% 130% at 50% -20%, rgba(245,192,68,.20), transparent 60%),
+    var(--panel);
+}
+.shop-hero-premium {
+  border-color: rgba(168,139,250,.24);
+  background:
+    radial-gradient(120% 130% at 50% -20%, rgba(168,139,250,.22), transparent 60%),
+    var(--panel);
+}
+.shop-hero-ref {
+  border-color: rgba(53,208,127,.24);
+  background:
+    radial-gradient(120% 130% at 50% -20%, rgba(53,208,127,.20), transparent 60%),
+    var(--panel);
+}
+.shop-emo {
+  position: relative; z-index: 2;
+  width: 72px; height: 72px; margin-bottom: 8px;
+  display: grid; place-items: center;
+}
+.shop-emo::before {
+  content: ''; position: absolute; inset: -18px; z-index: -1;
+  border-radius: 50%; filter: blur(8px);
+}
+.shop-hero-stars .shop-emo::before { background: radial-gradient(circle, rgba(245,192,68,.30), transparent 68%); }
+.shop-hero-premium .shop-emo::before { background: radial-gradient(circle, rgba(168,139,250,.32), transparent 68%); }
+.shop-hero-ref .shop-emo::before { background: radial-gradient(circle, rgba(53,208,127,.30), transparent 68%); }
+.shop-emo .emo, .shop-emo .emo svg, .shop-emo .emo img { width: 64px; height: 64px; }
+.shop-emo svg.ic { width: 60px; height: 60px; }
+.shop-hero-stars .shop-emo svg.ic { color: var(--gold); }
+.shop-hero-premium .shop-emo svg.ic { color: var(--purple); }
+.shop-hero-t { font-size: 18px; font-weight: 800; letter-spacing: -.02em; color: #fff; }
+.shop-hero-s { font-size: 12px; color: var(--hint); margin-top: 2px; }
+
+/* ===================== 9) Tugmalar ===================== */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+  width: 100%;
+  min-height: 50px; padding: 13px 18px;
+  border-radius: var(--r2);
+  font-size: 15px; font-weight: 700;
+  background: var(--accent);
+  color: #fff;
+  box-shadow: var(--glow);
+  transition: var(--press);
+}
+.btn:active { transform: scale(.97); filter: brightness(1.1); box-shadow: 0 4px 16px rgba(62, 166, 255, .2); }
+.btn:disabled { opacity: .45; pointer-events: none; }
+.btn svg { width: 17px; height: 17px; }
+.btn img.emoji { font-size: 17px; }
+.btn.soft { background: var(--accent-dim); color: var(--accent); box-shadow: none; }
+.btn.gray { background: var(--panel-2); border: 1px solid var(--line-2); color: var(--text); box-shadow: none; }
+.btn.line { background: transparent; color: var(--accent); border: 1.5px solid var(--accent-line); min-height: 46px; box-shadow: none; }
+.btn.red { background: var(--danger); color: #fff; box-shadow: 0 6px 24px rgba(255, 107, 107, .25); }
+.btn.red-soft { background: var(--danger-dim); color: var(--danger); box-shadow: none; }
+.btn.sm { width: auto; min-height: 34px; padding: 7px 13px; font-size: 13px; border-radius: 999px; }
+.btn.xs { width: auto; min-height: 28px; padding: 5px 10px; font-size: 12px; border-radius: 999px; }
+.btn-row { display: flex; gap: 8px; }
+.btn-row > .btn { flex: 1; }
+
+/* ===================== 10) Paket tanlash ===================== */
+.picks { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+.picks.c3 { grid-template-columns: repeat(3, 1fr); }
+.pickcard {
+  position: relative;
+  background: var(--panel);
+  border: 1.5px solid var(--line);
+  border-radius: var(--r2);
+  padding: 14px 10px 12px;
+  display: grid; gap: 2px; justify-items: center; text-align: center;
+  transition: var(--press);
+  box-shadow: var(--sh1);
+}
+.pickcard:active { transform: scale(.96); filter: brightness(1.15); }
+.pickcard.on { border-color: var(--accent); background: var(--accent-dim); }
+.pickcard:disabled { opacity: .45; }
+.pk-top { font-size: 16px; font-weight: 800; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+.pk-cap { font-size: 10.5px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--hint); }
+.pk-price { font-size: 13.5px; font-weight: 700; color: var(--accent); margin-top: 4px; font-variant-numeric: tabular-nums; }
+.pk-tag {
+  /* Oqim ichida — kartochkaning o'z qatorida (matn ustiga chiqmaydi) */
+  position: relative;
+  font-size: 8.5px; font-weight: 800; letter-spacing: .05em;
+  padding: 2.5px 9px; border-radius: 999px;
+  background: var(--accent); color: #fff; white-space: nowrap;
+  margin-bottom: 2px;
+}
+.pk-tag.gold { background: var(--gold); color: #221a00; }
+.pk-tag.ghost { background: transparent; }
+.pk-tag.warn-tag { background: var(--warn); color: #241a00; }
+.pk-note { font-size: 10px; font-weight: 600; color: var(--warn); margin-top: 3px; }
+/* Paket ichidagi kichik animatsiyali emoji */
+.pk-emo { height: 28px; display: grid; place-items: center; margin-bottom: 2px; }
+.pk-emo .emo, .pk-emo .emo svg, .pk-emo .emo img { width: 26px; height: 26px; }
+.pk-emo svg.ic { width: 24px; height: 24px; }
+.pk-stars .pk-emo svg.ic { color: var(--gold); }
+.pk-prem  .pk-emo svg.ic { color: var(--purple); }
+.pk-stars { border-color: rgba(245,192,68,.16); }
+.pk-stars:active { border-color: rgba(245,192,68,.4); }
+.pk-prem { border-color: rgba(168,139,250,.18); }
+.pk-prem:active { border-color: rgba(168,139,250,.42); }
+.pk-dim { opacity: .5; }
+.pk-dim .pk-price { color: var(--hint); }
+
+/* ===================== 11) Maydonlar ===================== */
+.field { display: grid; gap: 6px; }
+.field-l { font-size: 12px; font-weight: 700; color: var(--hint); letter-spacing: .02em; padding-left: 2px; }
+.inp-wrap { position: relative; display: flex; align-items: center; }
+.inp {
+  width: 100%;
+  background: var(--bg-2);
+  border: 1.5px solid var(--line-2);
+  border-radius: var(--r2);
+  color: var(--text);
+  font: inherit; font-weight: 600;
+  padding: 13px 14px; outline: none;
+  transition: border-color .15s, box-shadow .15s;
+  -webkit-appearance: none; appearance: none;
+}
+.inp:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(62, 166, 255, .12); }
+.inp::placeholder { color: var(--hint); font-weight: 500; }
+.inp-pre { position: absolute; left: 14px; color: var(--hint); font-weight: 700; pointer-events: none; display: grid; place-items: center; }
+.inp.pre { padding-left: 38px; }
+textarea.inp { resize: none; }
+.hint { display: flex; gap: 6px; align-items: flex-start; font-size: 12px; color: var(--hint); line-height: 1.4; }
+.hint img.emoji { font-size: 13px; }
+
+/* ===================== 12) Xulosa ===================== */
+.sum { background: var(--bg-2); border: 1px solid var(--line); border-radius: var(--r2); padding: 4px 14px; }
+.srow { display: flex; justify-content: space-between; gap: 14px; padding: 10px 0; font-size: 13.5px; }
+.srow + .srow { border-top: 1px solid var(--line); }
+.srow-k { color: var(--hint); }
+.srow-v { font-weight: 700; text-align: right; word-break: break-word; }
+.srow.total { font-size: 15px; }
+.srow.total .srow-v { font-size: 16px; letter-spacing: -.02em; color: #fff; }
+.srow.miss .srow-v { color: var(--danger); }
+.srow .ok { color: var(--ok); }
+
+/* ===================== 13) Ro'yxat qatorlari ===================== */
+.rows { display: grid; gap: 8px; }
+.rowcard {
+  display: flex; align-items: center; gap: 12px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--r2);
+  padding: 12px 13px;
+  box-shadow: var(--sh1);
+}
+.rowcard.click { width: 100%; text-align: left; transition: transform .13s var(--ease), filter .13s; }
+.rowcard.click:active { transform: scale(.98); filter: brightness(1.15); }
+.rowic {
+  flex: 0 0 40px; height: 40px; border-radius: 12px;
+  display: grid; place-items: center;
+  background: var(--panel-3);
+}
+.rowic img.emoji { font-size: 21px; }
+.rowic.gold { background: var(--gold-dim); }
+.rowic.purple { background: var(--purple-dim); }
+.rowic.ok { background: var(--ok-dim); }
+.rowic.danger { background: var(--danger-dim); }
+.rowic.warn { background: var(--warn-dim); }
+.rowic.sky { background: var(--accent-dim); }
+.rowbd { flex: 1; min-width: 0; display: grid; gap: 2px; }
+.rowt { font-size: 13.5px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.rowt .dim { color: var(--hint); font-weight: 500; }
+.rowsub { font-size: 11.5px; color: var(--hint); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.rowend { text-align: right; display: grid; gap: 3px; justify-items: end; flex: 0 0 auto; }
+.rowval { font-size: 13.5px; font-weight: 800; font-variant-numeric: tabular-nums; }
+.rowval.ok { color: var(--ok); } .rowval.danger { color: var(--danger); }
+
+/* ===================== 14) Badge ===================== */
+.badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 10.5px; font-weight: 700; letter-spacing: .02em;
+  padding: 3px 8px; border-radius: 999px; white-space: nowrap;
+}
+.badge svg { width: 11px; height: 11px; }
+.badge.ok { background: var(--ok-dim); color: var(--ok); }
+.badge.warn { background: var(--warn-dim); color: var(--warn); }
+.badge.danger { background: var(--danger-dim); color: var(--danger); }
+.badge.mute { background: var(--panel-3); color: var(--hint); }
+.badge.acc { background: var(--accent-dim); color: var(--accent); }
+.badge.gold { background: var(--gold-dim); color: var(--gold); }
+
+/* ===================== 15) Segment ===================== */
+.seg {
+  display: flex; gap: 2px;
+  background: var(--bg-2); border: 1px solid var(--line);
+  border-radius: var(--r2); padding: 3px; margin-bottom: 12px;
+}
+.seg button {
+  flex: 1; padding: 8px 4px;
+  border-radius: 11px;
+  font-size: 12.5px; font-weight: 700;
+  color: var(--hint);
+  transition: all .15s; white-space: nowrap;
+}
+.seg button:active { filter: brightness(1.2); }
+.seg button.on {
+  background: var(--panel-3); color: #fff;
+  box-shadow: var(--sh1);
+}
+
+/* ===================== 16) Switch ===================== */
+.sw { position: relative; width: 46px; height: 28px; flex: 0 0 46px; }
+.sw input { position: absolute; opacity: 0; width: 100%; height: 100%; margin: 0; cursor: pointer; }
+.sw-i { position: absolute; inset: 0; border-radius: 999px; background: var(--panel-3); transition: background .18s; }
+.sw-i::after {
+  content: ''; position: absolute; top: 2px; left: 2px;
+  width: 24px; height: 24px; border-radius: 50%;
+  background: #fff; box-shadow: 0 1px 4px rgba(0, 0, 0, .4);
+  transition: transform .18s var(--ease);
+}
+.sw input:checked + .sw-i { background: var(--accent); box-shadow: 0 0 12px rgba(62, 166, 255, .3); }
+.sw input:checked + .sw-i::after { transform: translateX(18px); }
+
+/* ===================== 17) Banner ===================== */
+.note {
+  display: flex; gap: 10px;
+  border-radius: var(--r2);
+  padding: 12px 13px;
+  font-size: 13px; line-height: 1.45;
+  margin-bottom: 12px;
+  border: 1px solid var(--line);
+}
+.note img.emoji { font-size: 16px; flex: 0 0 16px; margin-top: 1px; }
+.note b { font-weight: 700; }
+.note.info { background: var(--accent-dim); border-color: var(--accent-line); }
+.note.warn { background: var(--warn-dim); border-color: rgba(247, 185, 85, .22); }
+.note.err { background: var(--danger-dim); border-color: rgba(255, 107, 107, .22); }
+.note.okn { background: var(--ok-dim); border-color: rgba(53, 208, 127, .22); }
+
+/* ===================== 18) Bo'sh holat ===================== */
+.empty { display: grid; justify-items: center; gap: 4px; text-align: center; padding: 38px 24px; }
+.empty-ic { font-size: 44px; margin-bottom: 10px; }
+.empty-ic img { width: 44px; height: 44px; }
+.empty-t { font-size: 15px; font-weight: 700; }
+.empty-s { font-size: 12.5px; color: var(--hint); max-width: 260px; }
+
+/* ===================== 19) Skelet ===================== */
+.sk { border-radius: var(--r2); background: var(--panel-2); position: relative; overflow: hidden; }
+.sk::after {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .04), transparent);
+  animation: shimmer 1.15s infinite;
+}
+@keyframes shimmer { from { transform: translateX(-100%);} to { transform: translateX(100%);} }
+
+/* ===================== 20) Grafik ===================== */
+.chart { display: flex; align-items: flex-end; gap: 7px; height: 120px; padding-top: 16px; }
+.chart-col { flex: 1; display: grid; justify-items: center; gap: 6px; align-content: end; height: 100%; }
+.chart-bar {
+  width: min(100%, 26px);
+  border-radius: 7px;
+  background: linear-gradient(180deg, var(--accent), rgba(62, 166, 255, .25));
+  transform-origin: bottom;
+  animation: grow .5s var(--ease) both;
+}
+@keyframes grow { from { transform: scaleY(0); } }
+.chart-cap { font-size: 9.5px; font-weight: 600; color: var(--hint); }
+
+/* ===================== 21) Leaderboard ===================== */
+.lead { display: flex; align-items: center; gap: 11px; padding: 11px 0; }
+.lead + .lead { border-top: 1px solid var(--line); }
+.lead-n {
+  flex: 0 0 30px; height: 30px; border-radius: 10px;
+  display: grid; place-items: center;
+  font-size: 12.5px; font-weight: 800; font-variant-numeric: tabular-nums;
+  background: var(--panel-3); color: var(--hint);
+}
+.lead-n.p1 { background: var(--gold-dim); color: var(--gold); }
+.lead-n.p2 { background: rgba(148, 163, 184, .18); color: #94a3b8; }
+.lead-n.p3 { background: rgba(205, 127, 50, .16); color: #cd7f32; }
+.lead-bd { flex: 1; min-width: 0; display: grid; }
+.lead-t { font-size: 13.5px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.lead-s { font-size: 11.5px; color: var(--hint); }
+.lead-v { font-size: 13px; font-weight: 800; color: var(--ok); font-variant-numeric: tabular-nums; }
+
+/* ===================== 22) Havola box ===================== */
+.linkbox { display: flex; align-items: center; gap: 8px; background: var(--bg-2); border: 1px solid var(--line); border-radius: var(--r2); padding: 12px 13px; }
+.linkbox code {
+  flex: 1; font-size: 12px; font-weight: 600;
+  font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  word-break: break-all; color: var(--text); user-select: text;
+}
+
+/* ===================== 23) To'lov kartasi ===================== */
+.paycard {
+  position: relative; overflow: hidden;
+  border-radius: var(--r3);
+  padding: 18px;
+  background: linear-gradient(140deg, #1a2333 0%, #20263f 55%, #2a2440 100%);
+  border: 1px solid var(--line-2);
+  color: #fff; box-shadow: var(--sh2);
+}
+.paycard::after {
+  content: ''; position: absolute; right: -42px; top: -42px;
+  width: 160px; height: 160px; border-radius: 50%;
+  background: rgba(62, 166, 255, .10);
+}
+.pc-bank { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; opacity: .85; }
+.pc-bank img.emoji { font-size: 14px; }
+.pc-num {
+  margin: 20px 0 14px;
+  font-size: 19px; font-weight: 800; letter-spacing: .12em;
+  font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  font-variant-numeric: tabular-nums;
+}
+.pc-holder { font-size: 12px; font-weight: 600; opacity: .85; text-transform: uppercase; letter-spacing: .04em; }
+
+/* ===================== 24) Sheet ===================== */
+.sheet-root { position: fixed; inset: 0; z-index: 60; }
+.sheet-backdrop { position: absolute; inset: 0; background: rgba(0, 0, 0, .55); animation: fade .2s ease both; }
+@keyframes fade { from { opacity: 0; } }
+.sheet {
+  position: absolute; left: 0; right: 0; bottom: 0;
+  max-height: 86dvh; overflow-y: auto;
+  background: var(--panel);
+  border-top: 1px solid var(--line-2);
+  border-radius: var(--r5) var(--r5) 0 0;
+  padding: 8px 16px calc(env(safe-area-inset-bottom, 0px) + 16px);
+  animation: up .28s var(--ease) both;
+  box-shadow: var(--sh3);
+}
+@keyframes up { from { transform: translateY(60%); opacity: .4; } }
+.grab { width: 36px; height: 4px; border-radius: 4px; background: var(--line-2); margin: 4px auto 14px; }
+.sheet h3 { font-size: 17px; font-weight: 800; letter-spacing: -.02em; display: flex; align-items: center; gap: 8px; }
+.sheet h3 img.emoji { font-size: 19px; }
+.sheet-sub { color: var(--hint); font-size: 13px; margin-top: 3px; }
+
+/* ===================== 25) Toast ===================== */
+.toast-root {
+  position: fixed; top: calc(env(safe-area-inset-top, 0px) + 12px);
+  left: 50%; transform: translateX(-50%);
+  z-index: 70; width: min(92vw, 400px);
+  display: grid; gap: 8px; justify-items: center;
+  pointer-events: none;
+}
+.toast {
+  display: flex; align-items: center; gap: 9px;
+  max-width: 100%;
+  background: var(--panel-2); border: 1px solid var(--line-2);
+  color: var(--text);
+  font-size: 13.5px; font-weight: 600;
+  padding: 11px 16px; border-radius: 999px;
+  box-shadow: var(--sh2);
+  animation: tin .25s var(--ease) both;
+  transition: opacity .3s, transform .3s;
+}
+.toast img.emoji { font-size: 16px; }
+.toast .emo { width: 20px; height: 20px; flex: 0 0 20px; }
+.toast .emo svg, .toast .emo img { width: 20px; height: 20px; }
+.toast .emo svg.ic { width: 16px; height: 16px; }
+.toast.ok img.emoji { } .toast.err { } .toast.warn { } .toast.info { }
+.toast.hide { opacity: 0; transform: translateY(-8px); }
+@keyframes tin { from { opacity: 0; transform: translateY(-14px); } }
+
+/* ===================== 26) Veil ===================== */
+.veil {
+  position: fixed; inset: 0; z-index: 65;
+  display: grid; place-items: center;
+  background: rgba(0, 0, 0, .5);
+  animation: fade .15s ease both;
+}
+.veil-box { display: grid; justify-items: center; gap: 12px; padding: 26px 34px; background: var(--panel); border: 1px solid var(--line-2); border-radius: var(--r3); box-shadow: var(--sh2); }
+.veil-spin {
+  width: 28px; height: 28px; border-radius: 50%;
+  border: 3px solid var(--panel-3); border-top-color: var(--accent);
+  animation: rot .8s linear infinite;
+}
+@keyframes rot { to { transform: rotate(360deg); } }
+.veil-text { font-size: 13px; font-weight: 700; }
+
+/* ===================== 26b) Muvaffaqiyat portlashi (konfetti) ===================== */
+.celebrate {
+  position: fixed; inset: 0; z-index: 80;
+  display: grid; place-items: center;
+  pointer-events: none;
+  animation: cel-fade 2.4s ease forwards;
+}
+.celebrate .emo { width: 120px; height: 120px; filter: drop-shadow(0 8px 30px rgba(0,0,0,.5)); }
+.celebrate .emo svg, .celebrate .emo img { width: 120px; height: 120px; }
+@keyframes cel-fade {
+  0%   { opacity: 0; transform: scale(.6); }
+  15%  { opacity: 1; transform: scale(1); }
+  80%  { opacity: 1; }
+  100% { opacity: 0; transform: scale(1.1); }
+}
+
+/* ===================== 27) Natija ===================== */
+.result { display: grid; justify-items: center; gap: 6px; text-align: center; padding: 46px 20px 20px; }.result-ic { font-size: 64px; animation: pop .4s var(--ease) both; }
+.result-ic img { width: 64px; height: 64px; }
+@keyframes pop { from { transform: scale(.5); opacity: 0; } }
+.result-t { font-size: 19px; font-weight: 800; letter-spacing: -.02em; }
+.result-s { font-size: 13px; color: var(--hint); max-width: 300px; }
+
+/* ===================== 28) Chek ===================== */
+.receipt { width: 100%; border-radius: var(--r2); border: 1px solid var(--line); display: block; }
+.receipt-th { width: 44px; height: 44px; border-radius: var(--r1); object-fit: cover; border: 1px solid var(--line); }
+
+/* ===================== 29) Pagination ===================== */
+.pager { display: flex; align-items: center; justify-content: center; gap: 14px; margin-top: 14px; }
+.pager button {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 8px 14px; border-radius: 999px;
+  background: var(--panel-2); border: 1px solid var(--line);
+  font-size: 13px; font-weight: 700;
+  transition: filter .13s;
+}
+.pager button:active { filter: brightness(1.2); }
+.pager button:disabled { opacity: .35; }
+.pager button svg { width: 15px; height: 15px; }
+.pager-info { font-size: 12.5px; font-weight: 700; color: var(--hint); font-variant-numeric: tabular-nums; }
+
+/* ===================== 30) Profil ===================== */
+.userpic {
+  width: 58px; height: 58px; border-radius: var(--r3);
+  display: grid; place-items: center;
+  background: var(--panel-3); border: 1px solid var(--line-2);
+  color: var(--text); font-weight: 800; font-size: 22px;
+}
+
+/* Profil hero — nurli fon, animatsiyali 🫡 burchakda */
+.prof-hero {
+  position: relative; overflow: hidden;
+  border-radius: var(--r4);
+  padding: 20px 18px;
+  background:
+    radial-gradient(120% 130% at 85% -20%, rgba(62,166,255,.16), transparent 55%),
+    var(--panel);
+  border: 1px solid var(--line-2);
+  box-shadow: var(--sh2);
+}
+.prof-emo {
+  position: absolute; right: 14px; top: 14px; z-index: 2;
+  width: 52px; height: 52px; display: grid; place-items: center;
+}
+.prof-emo::before {
+  content: ''; position: absolute; inset: -10px; z-index: -1;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(62,166,255,.22), transparent 68%);
+  filter: blur(6px);
+}
+.prof-emo .emo, .prof-emo .emo svg, .prof-emo .emo img { width: 44px; height: 44px; }
+.prof-emo svg.ic { width: 40px; height: 40px; color: var(--accent); }
+.prof-id { display: flex; align-items: center; gap: 13px; padding-right: 56px; }
+.prof-ava {
+  flex: 0 0 56px; width: 56px; height: 56px; border-radius: var(--r3);
+  object-fit: cover; border: 2px solid var(--line-2); box-shadow: var(--sh1);
+}
+.prof-ava-fb {
+  display: grid; place-items: center;
+  background: linear-gradient(140deg, var(--accent-deep), var(--purple));
+  color: #fff; font-weight: 800; font-size: 22px;
+}
+.prof-txt { min-width: 0; display: grid; gap: 2px; }
+.prof-name { font-weight: 800; font-size: 17px; letter-spacing: -.02em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.prof-sub { color: var(--hint); font-size: 12.5px; }
+.prof-bal {
+  margin-top: 16px; padding-top: 14px;
+  border-top: 1px solid var(--line);
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+}
+.prof-bal-l { display: inline-flex; align-items: center; gap: 7px; font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--hint); }
+.prof-bal-v { font-size: 20px; font-weight: 800; letter-spacing: -.02em; font-variant-numeric: tabular-nums; color: #fff; }
+.prof-bal-v .num { color: var(--accent); }
+.prof-admin {
+  width: 100%; padding: 14px; display: flex; align-items: center; gap: 12px;
+  text-align: left; transition: var(--press);
+}
+.prof-admin:active { transform: scale(.97); filter: brightness(1.12); }
+.prof-foot { text-align: center; color: var(--hint); font-size: 11px; margin-top: 22px; }
+
+/* ===================== 31) COUNT-UP raqam ===================== */
+.num { font-variant-numeric: tabular-nums; }
+
+/* ===================== 32) Kichik ekranlar ===================== */
+@media (max-width: 380px) {
+  .picks.c3 { grid-template-columns: repeat(2, 1fr); }
+  .tiles.t3 { grid-template-columns: repeat(2, 1fr); }
+  .hero-v { font-size: 32px; }
+  .svc-grid { gap: 10px; }
+  .svc { min-height: 138px; }
+  .svc-emoji { font-size: 40px; }
+  .svc-emoji img { width: 40px; height: 40px; }
+}

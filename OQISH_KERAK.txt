@@ -1,0 +1,45 @@
+=====================================================
+  VERCEL'GA YUKLANADIGAN FAYLLAR (frontend)
+=====================================================
+
+Bu papkadagi HAMMA NARSANI Vercel'ga yuklang.
+
+Tarkibi:
+  index.html
+  css/app.css
+  js/  (9 ta fayl: config.js, app.js, user.js, admin.js,
+        ui.js, emoji.js, icons.js, slots.js, lottie.min.js)
+  emoji/custom/   (84 ta emoji fayli — statik asset, frontend bilan birga)
+
+-----------------------------------------------------
+TAYYOR SOZLANGAN (o'zgartirish SHART EMAS):
+-----------------------------------------------------
+  js/config.js  ->  API_BASE = 'https://6a7ad234b70e2.myxvest2.ru'
+  (API/receipts shu hosting'dan keladi; emoji esa Vercel'ning o'zidan)
+
+-----------------------------------------------------
+VERCEL'GA QANDAY YUKLANADI (bepul, birinchi marta):
+-----------------------------------------------------
+
+A) vercel.com ga kiring -> Sign Up (email yoki GitHub bilan).
+
+B) Shu papka ichida terminal oching:
+   - Windows: papka manzil satriga "cmd" yozib Enter.
+
+C) Terminalga yozing:
+      npx vercel
+   So'rovlar chiqadi:
+      - Log in?          -> Enter, brauzerda ruxsat bering
+      - Set up & deploy? -> Y
+      - Project name?    -> Enter
+      - Framework?       -> Other
+      - Root directory?  -> Enter (nuqta .)
+      - Deploy?          -> Yes
+
+D) Oxirida manzil chiqadi, masalan:
+      https://vercel-app-abc123.vercel.app
+   SHU MANZILNI NUSXA OLING va botga yuboring:
+      /setwebapp https://xxxx.vercel.app
+   (shundan keyin Telegram menyudagi "Mini App" tugmasi ochiladi)
+
+=====================================================

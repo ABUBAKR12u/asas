@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<title>Stars &amp; Premium</title>
+<link rel="stylesheet" href="css/app.css?v=14">
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script src="js/config.js?v=14"></script>
+</head>
+<body>
+
+<!-- ============ Yuklanish ekrani ============ -->
+<div id="boot" class="boot">
+    <div class="boot-body">
+        <div class="boot-mark" id="boot-mark"></div>
+        <div class="boot-name">Stars &amp; Premium</div>
+        <div class="boot-bar"><span></span></div>
+    </div>
+</div>
+
+<!-- ============ Rol tanlash (admin uchun) ============ -->
+<section id="gate" class="gate hidden">
+    <div class="gate-inner">
+        <div class="gate-head">
+            <div class="gate-mark" id="gate-mark"></div>
+            <h1 class="gate-title">Xush kelibsiz</h1>
+            <p class="gate-sub" id="gate-sub">Qaysi rejimda davom etamiz?</p>
+        </div>
+
+        <div class="gate-options">
+            <button class="pick" id="pick-user">
+                <span class="pick-ic pick-ic-user" id="pick-ic-user"></span>
+                <span class="pick-text">
+                    <span class="pick-title">Foydalanuvchi</span>
+                    <span class="pick-desc">Xarid, balans, referal dasturi</span>
+                </span>
+                <span class="pick-go" id="pick-go-user"></span>
+            </button>
+
+            <button class="pick" id="pick-admin">
+                <span class="pick-ic pick-ic-admin" id="pick-ic-admin"></span>
+                <span class="pick-text">
+                    <span class="pick-title">Admin panel</span>
+                    <span class="pick-desc">Statistika, buyurtmalar, sozlamalar</span>
+                </span>
+                <span class="pick-go" id="pick-go-admin"></span>
+            </button>
+        </div>
+
+        <p class="gate-foot" id="gate-foot"></p>
+    </div>
+</section>
+
+<!-- ============ Asosiy ilova ============ -->
+<div id="shell" class="shell hidden">
+    <header class="topbar" id="topbar">
+        <div class="topbar-main">
+            <h1 class="topbar-title" id="topbar-title">Asosiy</h1>
+            <p class="topbar-sub" id="topbar-sub"></p>
+        </div>
+        <div class="topbar-side" id="topbar-side"></div>
+    </header>
+
+    <main class="content" id="content"></main>
+
+    <nav class="tabbar" id="tabbar"></nav>
+</div>
+
+<!-- ============ Qatlamlar ============ -->
+<div id="sheet-root" class="sheet-root hidden">
+    <div class="sheet-backdrop" id="sheet-backdrop"></div>
+    <div class="sheet" id="sheet" role="dialog" aria-modal="true"></div>
+</div>
+
+<div id="toast-root" class="toast-root"></div>
+
+<div id="veil" class="veil hidden">
+    <div class="veil-box">
+        <div class="veil-spin"></div>
+        <div class="veil-text" id="veil-text">Bajarilmoqda</div>
+    </div>
+</div>
+
+<!-- ============ Skriptlar (build talab qilmaydi) ============ -->
+<script src="js/lottie.min.js?v=14"></script>
+<script src="js/icons.js?v=14"></script>
+<script src="js/slots.js?v=14"></script>
+<script src="js/emoji.js?v=14"></script>
+<script src="js/ui.js?v=14"></script>
+<script src="js/app.js?v=14"></script>
+<script src="js/user.js?v=14"></script>
+<script src="js/admin.js?v=14"></script>
+<script>App.boot();</script>
+</body>
+</html>
