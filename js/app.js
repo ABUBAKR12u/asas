@@ -259,10 +259,26 @@ const App = {
     return (window.APP_CONFIG && window.APP_CONFIG.API_BASE) || '';
   },
 
+  /* Proxy URL quruvchi.
+   * API_BASE '.cgi' bilan tugasa — hosting WAF'i '/api' yo'lini bloklagani
+   * uchun maqsad yo'lini base64 qilib ?t= ichida yuboramiz:
+   *    https://DOMAIN/gateway.cgi?t=<b64('/api?action=me')>
+   * Aks holda (ngrok/local/bir-butun) oddiy yo'l ishlatiladi. */
+  apiUrl(path) {
+    const base = this.apiBase();
+    if (/\.cgi$/.test(base)) {
+      // URL-safe base64 ('+'->'-', '/'->'_') — query ichida buzilmasin.
+      const tok = btoa(unescape(encodeURIComponent(path)))
+        .replace(/\+/g, '-').replace(/\//g, '_');
+      return `${base}?t=${tok}`;
+    }
+    return `${base}${path}`;
+  },
+
   async api(action, data = {}) {
     let resp;
     try {
-      resp = await fetch(`${this.apiBase()}/api?action=${encodeURIComponent(action)}`, {
+      resp = await fetch(this.apiUrl(`/api?action=${encodeURIComponent(action)}`), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'X-Init-Data': this.initData },
         body: JSON.stringify(data),
@@ -286,7 +302,7 @@ const App = {
   /* Fayl yuklash (chek rasmlari) */
   async upload(action, formData) {
     formData.append('init_data', this.initData);
-    const resp = await fetch(`${this.apiBase()}/api?action=${encodeURIComponent(action)}`, {
+    const resp = await fetch(this.apiUrl(`/api?action=${encodeURIComponent(action)}`), {
       method: 'POST',
       headers: { 'X-Init-Data': this.initData },
       body: formData,
