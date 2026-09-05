@@ -12,5 +12,5 @@
 'use strict';
 
 window.APP_CONFIG = {
-  API_BASE: 'https://6a7ad234b70e2.myxvest2.ru/gateway.cgi',
+  API_BASE: 'https://jump-characteristics-monitor-church.trycloudflare.com',
 };
