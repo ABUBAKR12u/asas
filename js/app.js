@@ -46,11 +46,15 @@ const App = {
     if (!this.initData) {
       // Diagnostika: muammo qayerda — SDK yuklanmadi mi, Mini App'ni
       // umuz browser'da ochdi mi (hash'da tgWebAppData yo'q) — aniq ko'rinadi.
+      let keys = '';
+      try {
+        keys = [...new URLSearchParams((location.hash || '').replace(/^#/, '')).keys()].join(',');
+      } catch (e) {}
       const dbg = [
         `SDK: ${window.Telegram && window.Telegram.WebApp ? 'bor' : 'YO\'Q'}`,
-        `tgWebAppData: ${(location.hash || '').includes('tgWebAppData') || (location.search || '').includes('tgWebAppData') ? 'BOR' : 'yo\'q'}`,
-        `hash uzunlik: ${(location.hash || '').length}`,
-      ].join(' · ');
+        `tgWebAppData: ${(location.hash || '').includes('tgWebAppData') ? 'BOR' : 'yo\'q'}`,
+        `hash kalitlari: ${keys || '(bo\'sh)'}`,
+      ].join(' | ');
       document.getElementById('boot').innerHTML = `
         <div class="boot-body">
           <div class="boot-mark" style="background:var(--danger)">${UI.icon('triangle-alert', 30)}</div>
@@ -279,7 +283,11 @@ const App = {
                   (location.search || '').replace(/^\?/, '');
       if (!raw) return '';
       const p = new URLSearchParams(raw);
-      return p.get('tgWebAppData') || '';
+      // 1-variant: standart Mini App — #tgWebAppData=<initData>&...
+      if (p.get('tgWebAppData')) return p.get('tgWebAppData');
+      // 2-variant: hash'ning o'zi xom initData (query_id=..&user=..&hash=..)
+      if (raw.includes('query_id=') && raw.includes('auth_date=')) return raw;
+      return '';
     } catch (e) { return ''; }
   },
 
