@@ -51,9 +51,9 @@ const App = {
         keys = [...new URLSearchParams((location.hash || '').replace(/^#/, '')).keys()].join(',');
       } catch (e) {}
       const dbg = [
-        `SDK: ${window.Telegram && window.Telegram.WebApp ? 'bor' : 'YO\'Q'}`,
+        `SDK initData: ${((this.tg && this.tg.initData) || '').length} belgi`,
         `tgWebAppData: ${(location.hash || '').includes('tgWebAppData') ? 'BOR' : 'yo\'q'}`,
-        `hash kalitlari: ${keys || '(bo\'sh)'}`,
+        `platform: ${(this.tg && this.tg.platform) || '?'}`,
       ].join(' | ');
       document.getElementById('boot').innerHTML = `
         <div class="boot-body">
@@ -76,6 +76,13 @@ const App = {
       if (me.is_blocked) {
         document.getElementById('shell').classList.remove('hidden');
         this.blockedScreen();
+        return;
+      }
+
+      // Majburiy obuna (admin'ga qo'llanilmaydi)
+      if (!this.isAdmin && me.subscribed === false) {
+        document.getElementById('shell').classList.remove('hidden');
+        this.subscribeScreen(me.not_subscribed || []);
         return;
       }
 
@@ -443,6 +450,35 @@ const App = {
         <div class="result-t">Bloklangansiz</div>
         <div class="result-s">Agar bu xato deb hisoblasangiz admin bilan bog'laning</div>
       </div>`;
+  },
+
+  /* Majburiy obuna ekrani — kanallarga a'zo bo'lmagan foydalanuvchi
+   * ilovadan foydalana olmaydi (bot'dagi qoida bilan bir xil). */
+  subscribeScreen(channels) {
+    document.getElementById('tabbar').classList.add('hidden');
+    this.paintTopbar('Obuna talab qilinadi', '');
+    const list = channels.map(ch => `
+      <button class="btn soft" style="margin-top:8px;text-decoration:none" data-join="${UI.attr(ch.link || '#')}">
+        ${UI.icon('megaphone', 15)} ${UI.esc(ch.title || 'Kanal')}
+      </button>`).join('');
+    document.getElementById('content').innerHTML = `
+      ${UI.note('warn', `<b>Davom etish uchun</b> quyidagi kanallarga obuna bo'ling.`)}
+      ${list || `<div class="result-s" style="margin-top:10px">Kanal ro'yxatini olib bo'lmadi — bot orqali urinib ko'ring.</div>`}
+      <button class="btn" id="sub-recheck" style="margin-top:14px">${UI.icon('refresh-cw', 15)} Obunani tekshirish</button>
+      <div class="result-s" style="margin-top:10px;text-align:center">Obuna bo'lgach tugmani bosing</div>`;
+    document.querySelectorAll('[data-join]').forEach(b => {
+      b.onclick = () => { App.tap(); this.openExternal(b.getAttribute('data-join')); };
+    });
+    document.getElementById('sub-recheck').onclick = async () => {
+      App.tap();
+      showVeil('Tekshirilmoqda');
+      try {
+        const me = await this.api('me');
+        hideVeil();
+        if (me.subscribed !== false) { this.boot(); }
+        else { toast('Hali obuna bo\'lmagansiz', 'err'); }
+      } catch (e) { hideVeil(); toast(e.message, 'err'); }
+    };
   },
 };
 
