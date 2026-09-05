@@ -376,7 +376,7 @@ window.UserApp = {
         <div class="srow total"><span class="srow-k">To'lov</span><span class="srow-v">${UI.sum(d.price)}</span></div>
       </div>
       ${d.admin_order
-        ? `<a class="btn" id="ord-admin" style="margin-top:14px" href="${UI.attr(d.admin_link || '#')}" target="_blank" rel="noopener">${UI.icon('send', 16)} Admin bilan bog'lanish</a>
+        ? `<button class="btn" id="ord-admin" style="margin-top:14px">${UI.icon('send', 16)} Admin bilan bog'lanish</button>
            <button class="btn gray" id="ord-close" style="margin-top:8px">Yopish</button>`
         : d.enough
         ? `<button class="btn" id="ord-go" style="margin-top:14px">${UI.icon('circle-check', 17)} Tasdiqlash</button>`
@@ -388,6 +388,7 @@ window.UserApp = {
     `);
 
     if (d.admin_order) {
+      document.getElementById('ord-admin').onclick = () => App.openExternal(d.admin_link);
       document.getElementById('ord-close').onclick = () => { closeSheet(); App.back(); };
       return;
     }
@@ -649,11 +650,13 @@ window.UserApp = {
           <div class="srow"><span class="srow-k">So'rov</span><span class="srow-v">#${d.topup_id}</span></div>
         </div>
         ${UI.note('info', `${UI.icon('zap', 14)} Quyidagi tugma orqali to'lovni bajaring. Click tasdiqlagach pul o'z-o'zidan qo'shiladi va <b>bot orqali</b> sizga xabar keladi — hech qanday qo'shimcha tugma kerak emas.`)}
-        <a class="btn" style="margin-top:14px;text-decoration:none" href="${UI.attr(d.pay_url)}" target="_blank" rel="noopener" id="tp-open">
+        <button class="btn" style="margin-top:14px" id="tp-open">
           ${UI.icon('external-link', 16)} Click'da to'lash
-        </a>
+        </button>
         <button class="btn gray" id="tp-close" style="margin-top:8px">Yopish</button>
       `);
+      // Click sahifasi iframe'da bloklanadi — Telegram openLink orqali ochamiz.
+      document.getElementById('tp-open').onclick = () => App.openExternal(d.pay_url);
       document.getElementById('tp-close').onclick = () => { closeSheet(); App.render('balance', {}, false); };
     } else {
       App.notify('success');
