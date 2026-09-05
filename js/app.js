@@ -48,8 +48,8 @@ const App = {
       // umuz browser'da ochdi mi (hash'da tgWebAppData yo'q) — aniq ko'rinadi.
       const dbg = [
         `SDK: ${window.Telegram && window.Telegram.WebApp ? 'bor' : 'YO\'Q'}`,
-        `hash: ${(location.hash || '').slice(0, 40) || 'bo\'sh'}`,
-        `query: ${(location.search || '').slice(0, 40) || 'bo\'sh'}`,
+        `tgWebAppData: ${(location.hash || '').includes('tgWebAppData') || (location.search || '').includes('tgWebAppData') ? 'BOR' : 'yo\'q'}`,
+        `hash uzunlik: ${(location.hash || '').length}`,
       ].join(' · ');
       document.getElementById('boot').innerHTML = `
         <div class="boot-body">
