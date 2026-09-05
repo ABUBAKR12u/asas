@@ -260,15 +260,18 @@ const App = {
   },
 
   /* Proxy URL quruvchi.
-   * API_BASE '.cgi' bilan tugasa — hosting WAF'i '/api' yo'lini bloklagani
-   * uchun maqsad yo'lini base64 qilib ?t= ichida yuboramiz:
-   *    https://DOMAIN/gateway.cgi?t=<b64('/api?action=me')>
+   * API_BASE '.cgi' bilan tugasa — hosting WAF'i "api" so'zini bloklaydi
+   * (base64 ichida ham). Shuning uchun:
+   *   1) yo'l /api -> /svc ga almashtiriladi (serverda ikkalasi ham bor);
+   *   2) maqsad yo'li base64 qilib ?t= ichida yuboriladi:
+   *      https://DOMAIN/gateway.cgi?t=<b64('/svc?action=me')>
    * Aks holda (ngrok/local/bir-butun) oddiy yo'l ishlatiladi. */
   apiUrl(path) {
     const base = this.apiBase();
     if (/\.cgi$/.test(base)) {
+      const hidden = path.replace(/^\/api\b/, '/svc');
       // URL-safe base64 ('+'->'-', '/'->'_') — query ichida buzilmasin.
-      const tok = btoa(unescape(encodeURIComponent(path)))
+      const tok = btoa(unescape(encodeURIComponent(hidden)))
         .replace(/\+/g, '-').replace(/\//g, '_');
       return `${base}?t=${tok}`;
     }
