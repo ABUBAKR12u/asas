@@ -30,11 +30,17 @@ const App = {
     mark.innerHTML = (bootCid && window.Emo) ? Emo.html(bootCid, 40) : UI.icon('sparkles', 30);
     if (window.Emo) Emo.mount(mark);
 
+    // SDK yuklanishi kechikkan/bloklangan bo'lishi mumkin — boot'da
+    // qayta o'qiymiz (modul yaratilishidagi bir martalik capture yetarli emas).
+    this.tg = window.Telegram?.WebApp || null;
     if (this.tg) {
-      this.tg.ready();
-      this.tg.expand();
+      try { this.tg.ready(); this.tg.expand(); } catch (e) {}
       this.initData = this.tg.initData || '';
     }
+
+    // SDK'siz holat: Telegram Mini App'ni `#tgWebAppData=...` (hash) yoki
+    // `?tgWebAppData=...` (query) bilan ochadi — initData'ni o'zimiz o'qiymiz.
+    if (!this.initData) this.initData = this._initDataFromUrl();
 
     // initData yo'q — Telegram ichida emas (brauzerda ochilgan)
     if (!this.initData) {
@@ -255,6 +261,20 @@ const App = {
    * ================================================================
    * API_BASE: webapp/js/config.js da. Bo'sh — bir xil server;
    * Vercel rejimida — shared hosting URL'i (cross-origin). */
+  /* SDK yuklanmagan holat uchun: Telegram Mini App URL'ni
+   *   .../#tgWebAppData=<encoded initData>&tgWebAppVersion=...
+   * yoki ba'zan `?tgWebAppData=...` (query) ko'rinishida ochadi.
+   * initData'ni shu yerdan qaytaradi (bo'sh — topilmadi). */
+  _initDataFromUrl() {
+    try {
+      const raw = (location.hash || '').replace(/^#/, '') ||
+                  (location.search || '').replace(/^\?/, '');
+      if (!raw) return '';
+      const p = new URLSearchParams(raw);
+      return p.get('tgWebAppData') || '';
+    } catch (e) { return ''; }
+  },
+
   apiBase() {
     return (window.APP_CONFIG && window.APP_CONFIG.API_BASE) || '';
   },
