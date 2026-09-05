@@ -324,6 +324,19 @@ const App = {
   notify(type = 'success') { // natija sezilishi
     try { this.tg?.HapticFeedback?.notificationOccurred(type); } catch (e) {}
   },
+  /* Tashqi havolani ochish (Click to'lov, admin profili...).
+   * MUHIM: my.click.uz sahifasi X-Frame-Options/CSP tufayli iframe ichida
+   * bloklanadi (ERR_BLOCKED_BY_RESPONSE) — Mini App esa iframe ichida ishlaydi.
+   * Shuning uchun Telegram SDK'ning openLink'ini ishlatamiz (tashqi/in-app
+   * brauzerda ochadi). SDK bo'lmasa yoki openLink ishlamasa — window.open. */
+  openExternal(url) {
+    if (!url) return;
+    try {
+      if (this.tg?.openLink) { this.tg.openLink(url); return; }
+    } catch (e) {}
+    try { window.open(url, '_blank', 'noopener'); }
+    catch (e) { location.href = url; }
+  },
   setBalance(v) {
     if (typeof v === 'number' && this.user) this.user.balance = v;
     this.paintTopbar();
