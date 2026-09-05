@@ -44,11 +44,19 @@ const App = {
 
     // initData yo'q — Telegram ichida emas (brauzerda ochilgan)
     if (!this.initData) {
+      // Diagnostika: muammo qayerda — SDK yuklanmadi mi, Mini App'ni
+      // umuz browser'da ochdi mi (hash'da tgWebAppData yo'q) — aniq ko'rinadi.
+      const dbg = [
+        `SDK: ${window.Telegram && window.Telegram.WebApp ? 'bor' : 'YO\'Q'}`,
+        `hash: ${(location.hash || '').slice(0, 40) || 'bo\'sh'}`,
+        `query: ${(location.search || '').slice(0, 40) || 'bo\'sh'}`,
+      ].join(' · ');
       document.getElementById('boot').innerHTML = `
         <div class="boot-body">
           <div class="boot-mark" style="background:var(--danger)">${UI.icon('triangle-alert', 30)}</div>
           <div class="boot-name">Telegram ichida oching</div>
           <div class="boot-sub" style="color:var(--hint);font-size:13px">Ilova faqat bot orqali, Mini App tugmasi bilan ishlaydi.</div>
+          <div class="boot-sub" style="color:var(--hint);font-size:10px;word-break:break-all;margin-top:10px;opacity:.7">${UI.esc(dbg)}</div>
         </div>`;
       return;
     }
